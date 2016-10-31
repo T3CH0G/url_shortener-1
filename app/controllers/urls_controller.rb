@@ -7,13 +7,22 @@ class UrlsController < ApplicationController
   end
 
   def create
-  	@url=Url.new(params[:long_url],params[:short_url])
+  	@url=Url.new(valid_params)
+    @url.short_url = SecureRandom.base64[0..8]
   	if @url.save
-  		redirect_to :index
-  	else
-  		errors=@url.errors.full_messages
-  		render :new
-  	end
+      redirect_to urls_path
+    else
+      @errors = @url.errors.full_messages
+      render :new
+    end   
 	end
+
+  private
+
+  def valid_params
+    params.require(:url).permit(:long_url)
+  end
+
+
 
 end
